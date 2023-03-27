@@ -27,9 +27,13 @@ public class myClient {
         return temp;
     }
 
+    public String sr(String message) throws IOException {
+        send(message);
+        return recieve();
+    }
+
     public void quit() throws IOException {
-        send("QUIT");
-        recieve();
+        sr("QUIT");
         in.close();
         out.close();
     }
@@ -37,12 +41,9 @@ public class myClient {
     public static void main(String[] args) throws UnknownHostException, IOException {
         myClient client = new myClient();
 
-        client.send("HELO");
-        client.recieve();
-        client.send("AUTH client");
-        client.recieve();
-        client.send("REDY");
-        client.recieve();
+        client.sr("HELO");
+        client.sr("AUTH client");
+        client.sr("REDY");
         client.quit();
     }
 }
