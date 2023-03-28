@@ -42,53 +42,47 @@ public class myClient {
         out.close();
     }
 
+    // Reads server information and saves the largest servers to an ArrayList
+    public ArrayList<String[]> saveLargestServers() throws IOException {
+        ArrayList<String[]> largestServers = new ArrayList<>();
+        int mostCores = 0;
+
+        String[] servers = sr("GETS All").split(" ");
+
+        String[][] serverInfo = new String[Integer.valueOf(servers[1])][];
+        send("OK");
+
+        // Reads all of the server information and saves the Largest Servers to an ArrayList
+        for (int i = 0; i < Integer.valueOf(servers[1]); i++) {
+
+            serverInfo[i] = recieve().split(" ");
+
+            // Add to list if same as largest server
+            if (Integer.valueOf(serverInfo[i][4]) == mostCores) {
+                largestServers.add(serverInfo[i]);
+            }
+
+            // Create new list if bigger than largest server
+            if (Integer.valueOf(serverInfo[i][4]) > mostCores) {
+                mostCores = Integer.valueOf(serverInfo[i][4]);
+                largestServers = new ArrayList<>();
+                largestServers.add(serverInfo[i]);
+            }
+        }
+        sr("OK");
+
+        return largestServers;
+    }
+
     public static void main(String[] args) throws UnknownHostException, IOException {
         myClient client = new myClient();
 
         client.sr("HELO");
         client.sr("AUTH client");
 
-        String firstJob = client.sr("REDY");
+        String[] job = client.sr("REDY").split(" ");
 
-        String[] servers = client.sr("GETS All").split(" ");
-
-        System.out.println("length: " + servers.length);
-        for (int i = 0; i < servers.length; i++) {
-            System.out.println(i + ": " + servers[i]);
-        }
-
-        ArrayList<String[]> LargestServers = new ArrayList<>();
-        int mostCores = 0;
-
-        String[][] serverInfo = new String[Integer.valueOf(servers[1])][];
-        client.send("OK");
-
-        // Reads all of the server information and saves the Largest Servers to an ArrayList
-        for (int i = 0; i < Integer.valueOf(servers[1]); i++) {
-
-            serverInfo[i] = client.recieve().split(" ");
-
-            // Add to list if same as largest server
-            if (Integer.valueOf(serverInfo[i][4]) == mostCores) {
-                LargestServers.add(serverInfo[i]);
-            }
-
-            // Create new list if bigger than largest server
-            if (Integer.valueOf(serverInfo[i][4]) > mostCores) {
-                mostCores = Integer.valueOf(serverInfo[i][4]);
-                LargestServers = new ArrayList<>();
-                LargestServers.add(serverInfo[i]);
-            }
-        }
-        client.sr("OK");
-
-        // Prints largest servers
-        for (String[] server : LargestServers) {
-            for (String element : server) {
-                System.out.print(element + " ");                
-            }
-            System.out.println();
-        }
+        ArrayList<String[]> largestServers = client.saveLargestServers();
 
         client.quit();
     }
