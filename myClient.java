@@ -40,12 +40,14 @@ public class myClient {
         sr("QUIT");
         in.close();
         out.close();
+        socket.close();
     }
 
     // Reads server information and saves the largest servers to an ArrayList
     public ArrayList<String[]> saveLargestServers() throws IOException {
         ArrayList<String[]> largestServers = new ArrayList<>();
         int mostCores = 0;
+        String sType = "";
 
         String[] servers = sr("GETS All").split(" ");
 
@@ -57,14 +59,15 @@ public class myClient {
 
             serverInfo[i] = recieve().split(" ");
 
-            // Add to list if same as largest server
-            if (Integer.valueOf(serverInfo[i][4]) == mostCores) {
+            // Add to list if server type is same as largest server
+            if (serverInfo[i][0].equals(sType) ) {
                 largestServers.add(serverInfo[i]);
             }
 
-            // Create new list if bigger than largest server
+            // Create new list if number of cores is bigger than largest server
             if (Integer.valueOf(serverInfo[i][4]) > mostCores) {
                 mostCores = Integer.valueOf(serverInfo[i][4]);
+                sType = serverInfo[i][0];
                 largestServers = new ArrayList<>();
                 largestServers.add(serverInfo[i]);
             }
@@ -82,11 +85,15 @@ public class myClient {
             sr("SCHD " + job[2] + " " + largestServers.get(schdNum)[0] + " " + largestServers.get(schdNum)[1]);
             schdNum = (schdNum + 1) % largestServers.size();
             job = sr("REDY").split(" ");
+            while (!(job[0].equals("JOBN") || job[0].equals("NONE"))) {
+                job = sr("REDY").split(" ");
+            }
         }
 
 
     }
 
+    // Order of Events the client performs
     public static void main(String[] args) throws UnknownHostException, IOException {
         myClient client = new myClient();
 
