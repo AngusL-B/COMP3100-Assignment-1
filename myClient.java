@@ -1,5 +1,6 @@
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.DataOutputStream;
@@ -10,6 +11,7 @@ public class myClient {
     private BufferedReader in;
     private DataOutputStream out;
 
+    // Constructor for myClient
     public myClient() throws UnknownHostException, IOException {
         socket = new Socket("127.0.0.1", 50000);
         in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -27,11 +29,13 @@ public class myClient {
         return temp;
     }
 
+    // Sends and recieves a message one after the other
     public String sr(String message) throws IOException {
         send(message);
         return recieve();
     }
 
+    // Closes the connection
     public void quit() throws IOException {
         sr("QUIT");
         in.close();
@@ -53,13 +57,38 @@ public class myClient {
             System.out.println(i + ": " + servers[i]);
         }
 
-        String[] serverInfo = new String[Integer.valueOf(servers[1])];
-        serverInfo[0] = client.sr("OK");
+        ArrayList<String[]> LargestServers = new ArrayList<>();
+        int mostCores = 0;
 
-        for (int i = 1; i < Integer.valueOf(servers[1]); i++) {
-            serverInfo[i] = client.recieve();
+        String[][] serverInfo = new String[Integer.valueOf(servers[1])][];
+        client.send("OK");
+
+        // Reads all of the server information and saves the Largest Servers to an ArrayList
+        for (int i = 0; i < Integer.valueOf(servers[1]); i++) {
+
+            serverInfo[i] = client.recieve().split(" ");
+
+            // Add to list if same as largest server
+            if (Integer.valueOf(serverInfo[i][4]) == mostCores) {
+                LargestServers.add(serverInfo[i]);
+            }
+
+            // Create new list if bigger than largest server
+            if (Integer.valueOf(serverInfo[i][4]) > mostCores) {
+                mostCores = Integer.valueOf(serverInfo[i][4]);
+                LargestServers = new ArrayList<>();
+                LargestServers.add(serverInfo[i]);
+            }
         }
         client.sr("OK");
+
+        // Prints largest servers
+        for (String[] server : LargestServers) {
+            for (String element : server) {
+                System.out.print(element + " ");                
+            }
+            System.out.println();
+        }
 
         client.quit();
     }
