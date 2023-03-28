@@ -74,6 +74,19 @@ public class myClient {
         return largestServers;
     }
 
+    public void LRRAlgorithm(String[] job, ArrayList<String[]> largestServers) throws IOException {
+
+        int schdNum = 0;
+
+        while(!(job.length < 3)) {
+            sr("SCHD " + job[2] + " " + largestServers.get(schdNum)[0] + " " + largestServers.get(schdNum)[1]);
+            schdNum = (schdNum + 1) % largestServers.size();
+            job = sr("REDY").split(" ");
+        }
+
+
+    }
+
     public static void main(String[] args) throws UnknownHostException, IOException {
         myClient client = new myClient();
 
@@ -83,6 +96,8 @@ public class myClient {
         String[] job = client.sr("REDY").split(" ");
 
         ArrayList<String[]> largestServers = client.saveLargestServers();
+
+        client.LRRAlgorithm(job, largestServers);
 
         client.quit();
     }
