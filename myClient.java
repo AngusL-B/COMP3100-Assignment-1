@@ -43,7 +43,24 @@ public class myClient {
 
         client.sr("HELO");
         client.sr("AUTH client");
-        client.sr("REDY");
+
+        String firstJob = client.sr("REDY");
+
+        String[] servers = client.sr("GETS All").split(" ");
+
+        System.out.println("length: " + servers.length);
+        for (int i = 0; i < servers.length; i++) {
+            System.out.println(i + ": " + servers[i]);
+        }
+
+        String[] serverInfo = new String[Integer.valueOf(servers[1])];
+        serverInfo[0] = client.sr("OK");
+
+        for (int i = 1; i < Integer.valueOf(servers[1]); i++) {
+            serverInfo[i] = client.recieve();
+        }
+        client.sr("OK");
+
         client.quit();
     }
 }
