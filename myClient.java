@@ -25,7 +25,7 @@ public class myClient {
 
     public String recieve() throws IOException {
         String temp = in.readLine();
-        System.out.println(temp);
+        // System.out.println(temp);
         return temp;
     }
 
@@ -77,20 +77,19 @@ public class myClient {
         return largestServers;
     }
 
+    // Largest-Round-Robin Algorithm
     public void LRRAlgorithm(String[] job, ArrayList<String[]> largestServers) throws IOException {
 
-        int schdNum = 0;
+        int serverNum = 0;
 
         while(!(job.length < 3)) {
-            sr("SCHD " + job[2] + " " + largestServers.get(schdNum)[0] + " " + largestServers.get(schdNum)[1]);
-            schdNum = (schdNum + 1) % largestServers.size();
+            sr("SCHD " + job[2] + " " + largestServers.get(serverNum)[0] + " " + largestServers.get(serverNum)[1]);
+            serverNum = (serverNum + 1) % largestServers.size();
             job = sr("REDY").split(" ");
             while (!(job[0].equals("JOBN") || job[0].equals("NONE"))) {
                 job = sr("REDY").split(" ");
             }
         }
-
-
     }
 
     // Order of Events the client performs
@@ -98,7 +97,8 @@ public class myClient {
         myClient client = new myClient();
 
         client.sr("HELO");
-        client.sr("AUTH client");
+
+        client.sr("AUTH " + System.getProperty("user.name"));
 
         String[] job = client.sr("REDY").split(" ");
 
